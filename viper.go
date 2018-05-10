@@ -44,6 +44,7 @@ import (
 	"github.com/spf13/cast"
 	jww "github.com/spf13/jwalterweatherman"
 	"github.com/spf13/pflag"
+	"io/ioutil"
 )
 
 // ConfigMarshalError happens when failing to marshal the configuration.
@@ -341,7 +342,19 @@ func (v *Viper) getEnv(key string) string {
 	if v.envKeyReplacer != nil {
 		key = v.envKeyReplacer.Replace(key)
 	}
+	if path := os.Getenv(key + "_FILE"); path != "" {
+		return readFile(path)
+	}
 	return os.Getenv(key)
+}
+
+func readFile(path string) string {
+	buf, err := ioutil.ReadFile(path)
+	if err != nil {
+		jww.ERROR.Printf("could not read from file %s: %s", path, err)
+		return ""
+	}
+	return strings.TrimSpace(string(buf))
 }
 
 // ConfigFileUsed returns the file used to populate the config registry.
