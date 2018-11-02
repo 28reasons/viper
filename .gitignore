@@ -23,4 +23,7 @@ _testmain.go
 *.test
 *.bench
 
-.idea
+.vscode
+
+# exclude dependencies in the `/vendor` folder
+vendor
